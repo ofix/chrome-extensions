@@ -1,0 +1,57 @@
+{
+    "manifest_version": 3,
+    "name": "Redfish",
+    "version": "1.0.0",
+    "description": "抓取Redfish API接口返回的数据",
+    "homepage_url": "https://github.com/ofix",
+    "author": "songhuabiao@greatwall.com.cn",
+    "icons": {
+        "48": "img/48_48.png",
+        "128": "img/128_128.png"
+    },
+    "background": {
+        "service_worker": "js/background.js"
+    },
+    "content_scripts": [
+        {
+            "js": [
+                "js/content.js"
+            ],
+            "matches": [
+                "https://172.26.14.10/*"
+            ]
+        }
+    ],
+    "permissions": [
+        "scripting",
+        "bookmarks",
+        "browsingData",
+        "cookies",
+        "nativeMessaging",
+        "contextMenus",
+        "tabs",
+        "notifications",
+        "webRequest",
+        "storage"
+    ],
+    "commands": {
+        "download_redfish_pages": {
+            "suggested_key": {
+                "default": "Ctrl+Q",
+                "windows": "Ctrl+Q",
+                "mac": "Command+Q",
+                "chromeos": "Ctrl+Q",
+                "linux": "Ctrl+Q"
+            },
+            "description": "保存 BMC Redfish API 接口数据抓取"
+        }
+    },
+    "host_permissions": [
+        "https://*/redfish/v1/*"
+    ],
+    "omnibox": {
+        "keyword": "api"
+    },
+    "default_locale": "zh_CN",
+    "devtools_page": "devtools.html"
+}

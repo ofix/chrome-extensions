@@ -1,0 +1,20 @@
+{
+   "browser_action": {
+      "default_popup": "index.html"
+   },
+   "content_security_policy": "script-src 'self' https://smartbox.gtimg.cn; object-src 'self'",
+   "description": "炒股利器，不会被上司发现的看盘小工具",
+   "homepage_url": "http://www.baozy.com/gupiaozhushou",
+   "icons": {
+      "128": "images/icon128.png",
+      "16": "images/icon16.png",
+      "32": "images/icon32.png",
+      "48": "images/icon48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwHGLVSEjxe0wP9Jp1kLnZTboQm4iUnPLeS3Ok49QcnKDlfxaEVSmhlnTYtyl6tfE5ijAP5CIeKT351UKuJqoMVt1mRvHiVBcKx5YYHIWRYBBGGsrFVYA3OABLLxHv8NsNwOBpEDDL4JlTjTMNocjKhpKvfYflItfrLh6a8lD2lFX+TzNY5sZP/Ld4uHvgEK1ly8VVXxgjjVhX8KAeq/m1OkQFct0jhO1vAPhRLL6N9WQCP1AUhmbz/2tS4hvRyvfs7U8JW3KQeG/X+h5kIiBQItSyKZl5Om5RoW5ynNRzyZjzAvEnL2+bRWmYiiwtfmGWYDZWlFzNcRMtP+swtmtKQIDAQAB",
+   "manifest_version": 2,
+   "name": "股票助手",
+   "permissions": [ "*://*.gtimg.cn/*" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.0.2"
+}

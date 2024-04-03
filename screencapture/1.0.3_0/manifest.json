@@ -1,0 +1,31 @@
+{
+   "background": {
+      "persistent": true,
+      "scripts": [ "/js/background.js" ]
+   },
+   "browser_action": {
+      "default_icon": "images/logo.png",
+      "default_popup": "popup.html"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "css": [ "/css/share-modal.css" ],
+      "js": [ "/js/lib/jquery-3.2.1.min.js", "/js/contentScript.js", "/js/share-modal.js" ],
+      "matches": [ "\u003Call_urls>" ],
+      "run_at": "document_start"
+   } ],
+   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+   "default_locale": "zh_CN",
+   "description": "__MSG_description__",
+   "icons": {
+      "128": "images/logo.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwJhyIP8wjC0PDWApDDUZ0b4v4QUCOrxxQpoV+xy7rW9Aw4/bbCDbyPEm8k7lMHWNl5NVX6KxcqNLrpUd9XelH4X8MOXFDEtT7bGtgg/Y1dbTPtQsPK8aRedHFIs/dJI1qvA2FV0zby6PRGjIyY1j0/21JLwH9lHm9zAX85TUB5tAtUnqjKHRnpAspwID9ENEURHBqEQ2qspQIw5d6Z6o4to/gGBOgNOVWvF9rF94bpstF5U26aS3iRQWQrlcWCq76uv/b+Te8kDBlHCenMoX3q4gVoE4p5mp1a+WuDsw8wGKavRyu3xocUm67Gz5UkkB2du3dC1b8LhzOO4k+y+YrQIDAQAB",
+   "manifest_version": 2,
+   "name": "__MSG_name__",
+   "permissions": [ "\u003Call_urls>", "storage", "unlimitedStorage", "webRequest", "webRequestBlocking" ],
+   "short_name": "__MSG_short_name__",
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "1.0.3",
+   "web_accessible_resources": [ "/css/injectable.css", "editor.html" ]
+}

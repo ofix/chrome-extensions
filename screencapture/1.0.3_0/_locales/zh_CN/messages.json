@@ -1,0 +1,32 @@
+{
+   "description": {
+      "message": "创新的屏幕截图工具使用户可以捕获和编辑屏幕上显示的任何图像"
+   },
+   "name": {
+      "message": "截图-完整长截图-区域截图"
+   },
+   "popupDesc1": {
+      "message": "截图将在完成后在新标签页中打开！"
+   },
+   "popupDesc2": {
+      "message": "截屏失败！尝试重新加载页面。"
+   },
+   "popupDesc3": {
+      "message": "无法截取这种类型的屏幕截图。在浏览器中尝试其他页面。"
+   },
+   "rateDialogDesc": {
+      "message": "您介意在 Edge 网上应用店给我们评分吗？谢谢！"
+   },
+   "rateDialogNo": {
+      "message": "也许下次吧"
+   },
+   "rateDialogTitle": {
+      "message": "对你有用的应用程序吗？"
+   },
+   "rateDialogYes": {
+      "message": "好的，确定"
+   },
+   "short_name": {
+      "message": "GoFullPage"
+   }
+}
