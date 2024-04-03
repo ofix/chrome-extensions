@@ -32,7 +32,8 @@
         "tabs",
         "notifications",
         "webRequest",
-        "storage"
+        "storage",
+        "declarativeNetRequest"
     ],
     "commands": {
         "download_redfish_pages": {
