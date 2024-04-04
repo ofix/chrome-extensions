@@ -5,9 +5,15 @@
     "description": "抓取Redfish API接口返回的数据",
     "homepage_url": "https://github.com/ofix",
     "author": "songhuabiao@greatwall.com.cn",
-    "icons": {
-        "48": "img/48_48.png",
-        "128": "img/128_128.png"
+    "action": {
+        "default_icon": {
+            "24": "img/16_16.png",
+            "48": "img/48_48.png",
+            "64": "img/64_64.png",
+            "128": "img/128_128.png"
+        },
+        "default_title": "BMC Redfish APIs",
+        "default_popup": "popup.html"
     },
     "background": {
         "service_worker": "js/background.js"
@@ -33,7 +39,10 @@
         "notifications",
         "webRequest",
         "storage",
-        "declarativeNetRequest"
+        "declarativeNetRequest",
+        "declarativeNetRequestFeedback",
+        "alarms",
+        "desktopCapture"
     ],
     "commands": {
         "download_redfish_pages": {

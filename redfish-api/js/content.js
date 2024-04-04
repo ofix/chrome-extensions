@@ -29,6 +29,24 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 //   console.log(data);
 // });
 
+// chrome.contextMenus.onClicked.addListener(function () {});
+
+// chrome.devtools.network.onRequestFinished.addListener(function (request) {
+//   if (request.response.bodySize > 40 * 1024) {
+//     chrome.devtools.inspectedWindow.eval(
+//       'console.log("Large image: " + unescape("' +
+//         escape(request.request.url) +
+//         '"))'
+//     );
+//   }
+// });
+
+// chrome.webRequest.onBeforeRequest.addListener(
+//   callback,
+//   filter,
+//   opt_extraInfoSpec
+// );
+
 // 发送一条消息告诉[background.js]返回对应的请求数据
 function sendMessage(message, callback) {
   (async () => {
