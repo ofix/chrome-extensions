@@ -1,0 +1,26 @@
+{
+    "name": "redfish",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "watch": "vite build --watch",
+        "dev": "vite",
+        "build": "vite build -c vite.config.js",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "element-plus": "^2.6.3",
+        "vue": "^3.4.21",
+        "vue-router": "^4.0.13",
+        "vuex": "^4.0.2"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-basic-ssl": "^1.1.0",
+        "@vitejs/plugin-vue": "^5.0.4",
+        "less": "^4.2.0",
+        "rollup-plugin-copy": "^3.5.0",
+        "sass": "^1.74.1",
+        "vite": "^5.2.0"
+    }
+}

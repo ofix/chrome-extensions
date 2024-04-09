@@ -7,25 +7,29 @@
     "author": "songhuabiao@greatwall.com.cn",
     "action": {
         "default_icon": {
-            "24": "img/16_16.png",
-            "48": "img/48_48.png",
-            "64": "img/64_64.png",
-            "128": "img/128_128.png"
+            "24": "assets/16_16.png",
+            "48": "assets/48_48.png",
+            "64": "assets/64_64.png",
+            "128": "assets/128_128.png"
         },
         "default_title": "BMC Redfish APIs",
-        "default_popup": "popup.html"
+        "default_popup": "popup/index.html",
+        "default_css": "popup/popup.css"
     },
     "background": {
-        "service_worker": "js/background.js"
+        "service_worker": "background/service_worker.js"
     },
     "content_scripts": [
         {
             "js": [
-                "js/content.js"
+                "content/content.js"
             ],
             "matches": [
-                "https://172.26.14.10/*"
-            ]
+                "https://*/*"
+            ],
+            "all_frames": true,
+            "run_at": "document_end",
+            "match_about_blank": true
         }
     ],
     "permissions": [
@@ -42,7 +46,21 @@
         "declarativeNetRequest",
         "declarativeNetRequestFeedback",
         "alarms",
-        "desktopCapture"
+        "desktopCapture",
+        "management"
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "content_pages/*",
+                "assets/*",
+                "_locales/*"
+            ],
+            "matches": [
+                "https://*/*"
+            ],
+            "use_dynamic_url": true
+        }
     ],
     "commands": {
         "download_redfish_pages": {
@@ -54,6 +72,14 @@
                 "linux": "Ctrl+Q"
             },
             "description": "保存 BMC Redfish API 接口数据抓取"
+        },
+        "reload_extension": {
+            "suggested_key": {
+                "default": "Alt+R",
+                "windows": "Alt+R",
+                "mac": "Alt+R"
+            },
+            "description": "reload browser extension"
         }
     },
     "host_permissions": [
@@ -62,6 +88,5 @@
     "omnibox": {
         "keyword": "api"
     },
-    "default_locale": "zh_CN",
-    "devtools_page": "devtools.html"
+    "default_locale": "zh_CN"
 }
