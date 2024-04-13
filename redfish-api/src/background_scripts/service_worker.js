@@ -1,5 +1,4 @@
 chrome.commands.onCommand.addListener((shortcut) => {
-  console.log(shortcut);
   if (shortcut == "reload_extension") {
     console.log("reload extension");
     chrome.runtime.reload();
@@ -24,7 +23,6 @@ function doGet(url) {
     })
     .then((data) => {
       visited_pages.push({ url: url, response: data });
-      console.log(data);
     })
     .catch((error) => {
       console.info("Error:", error);
@@ -44,12 +42,37 @@ function sendMessasgeToChromeTab(message) {
   })();
 }
 
+// chrome.webRequest.onBeforeRequest.addListener(
+//   (details) => {
+//     console.log("++++++ onBeforeRequest ++++++");
+//     console.log(details);
+//     return { cancel: false };
+//   },
+//   {
+//     urls: ["https://*/redfish/v1/*"],
+//   },
+//   ["xmlhttprequest"]
+// );
+
+// chrome.webRequest.onBeforeSendHeaders.addListener(
+//   (details) => {
+//     console.log("++++++ onBeforeSendHeaders ++++++");
+//     console.log(details);
+//     return { cancel: false };
+//   },
+//   {
+//     urls: ["https://*/redfish/v1/*"],
+//   },
+//   ["xmlhttprequest"]
+// );
+
 chrome.webRequest.onCompleted.addListener(
-  function (request) {
+  (request) => {
     const url = request.url;
     const method = request.method;
-    let message = { method: method, url: url };
-    if (!visited_urls.hasOwnProperty(url)) {
+    console.log("+++++ onCompleted +++++");
+    console.log(request);
+    if (method == "GET" && !visited_urls.hasOwnProperty(url)) {
       doGet(url);
       visited_urls[url] = 1;
     }
@@ -58,6 +81,11 @@ chrome.webRequest.onCompleted.addListener(
     urls: ["https://*/redfish/v1/*"],
   }
 );
+
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((e) => {
+  console.error("+++++ onRuleMatchedDebug +++++");
+  console.error(e);
+});
 
 // 完成请求，发送数据给客户端
 // chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
