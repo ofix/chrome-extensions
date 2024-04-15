@@ -3,15 +3,33 @@
         "id": 1,
         "priority": 1,
         "action": {
+            "type": "modifyHeaders",
+            "responseHeaders": [
+                {
+                    "header": "Content-Security-Policy",
+                    "operation": "remove"
+                }
+            ]
+        },
+        "condition": {
+            "resourceTypes": [
+                "main_frame"
+            ]
+        }
+    },
+    {
+        "id": 2,
+        "priority": 2,
+        "action": {
             "type": "redirect",
             "redirect": {
                 "regexSubstitution": "https://localhost:8888/proxy?redirect_url=\\0"
             }
         },
         "condition": {
-            "regexFilter": "^https://*/redfish/v1/*",
+            "regexFilter": "^https://[^/]+?/redfish/v1/.*",
             "resourceTypes": [
-                "main_frame"
+                "xmlhttprequest"
             ]
         }
     }

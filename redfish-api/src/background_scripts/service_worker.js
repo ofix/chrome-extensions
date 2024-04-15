@@ -70,10 +70,12 @@ chrome.webRequest.onCompleted.addListener(
   (request) => {
     const url = request.url;
     const method = request.method;
-    console.log("+++++ onCompleted +++++");
+    console.log("++++++++++++++++++++++");
+    console.log("url =" + url);
     console.log(request);
+    console.info("#####################");
     if (method == "GET" && !visited_urls.hasOwnProperty(url)) {
-      doGet(url);
+      //   doGet(url);
       visited_urls[url] = 1;
     }
   },
@@ -82,10 +84,10 @@ chrome.webRequest.onCompleted.addListener(
   }
 );
 
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((e) => {
-  console.error("+++++ onRuleMatchedDebug +++++");
-  console.error(e);
-});
+// chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((e) => {
+//   console.error("+++++ onRuleMatchedDebug +++++");
+//   console.error(e);
+// });
 
 // 完成请求，发送数据给客户端
 // chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {

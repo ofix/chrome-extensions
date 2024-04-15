@@ -93,7 +93,7 @@
         }
     },
     "host_permissions": [
-        "https://*/redfish/v1/*"
+        "<all_urls>"
     ],
     "omnibox": {
         "keyword": "api"
