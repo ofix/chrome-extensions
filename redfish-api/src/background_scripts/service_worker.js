@@ -8,9 +8,9 @@ chrome.commands.onCommand.addListener((shortcut) => {
 let visited_urls = {};
 let visited_pages = [];
 // 发送Get请求
-function doGet(url) {
+function doRequest(method, url) {
   fetch(url, {
-    method: "GET",
+    method: method,
     headers: {
       "Content-Type": "application/json",
     },
@@ -75,12 +75,12 @@ chrome.webRequest.onCompleted.addListener(
     console.log(request);
     console.info("#####################");
     if (method == "GET" && !visited_urls.hasOwnProperty(url)) {
-      //   doGet(url);
+      doGet(url);
       visited_urls[url] = 1;
     }
   },
   {
-    urls: ["https://*/redfish/v1/*"],
+    urls: ["https://localhost:8888/proxy*"],
   }
 );
 
