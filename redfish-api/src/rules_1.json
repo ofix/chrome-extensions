@@ -23,7 +23,7 @@
         "action": {
             "type": "redirect",
             "redirect": {
-                "regexSubstitution": "https://localhost:8888/proxy?redirect_url=\\0"
+                "regexSubstitution": "https://localhost:9999/proxy?redirect_url=\\0"
             }
         },
         "condition": {
