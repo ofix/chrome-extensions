@@ -25,15 +25,13 @@ function sendMessage(message, callback) {
 }
 
 onMounted(() => {
-    console.log("content page onMounted....");
     chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-        console.log("receive message from background.js");
-        if (request.type == "pages") {
+        if (request.type == "download_apis") {
             let data = "";
-            for (let i = 0; i < request.pages.length; i++) {
-                let page = request.pages[i];
-                let url = page.url;
-                let response = JSON.stringify(page.response, "", 3);
+            for (let i = 0; i < request.apis.length; i++) {
+                let api = request.apis[i];
+                let url = api.url;
+                let response = JSON.stringify(api.response, "", 3);
                 data += "\n# request\n\n";
                 data += "GET," + url + "\n\n";
                 data += "# response\n\n";
@@ -42,6 +40,9 @@ onMounted(() => {
                 data += "```";
             }
             downloadRedifshApis(data);
+        } else if (request.type == "api_count") {
+            chrome.action.setBadgeText({ text: (request.count).toString() });
+            chrome.action.setBadgeBackgroundColor({ color: "#6600cc" });
         }
     });
 });

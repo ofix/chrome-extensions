@@ -64,7 +64,7 @@
         }
     ],
     "commands": {
-        "download_redfish_pages": {
+        "download_apis": {
             "suggested_key": {
                 "default": "Ctrl+Q",
                 "windows": "Ctrl+Q",

@@ -19,10 +19,11 @@ export default class ProxyServer {
     }
     // 从background.js发送消息给content.js
     sendMessageToContentJs(message) {
+        // chrome.runtime.sendMessage(message);
         (async () => {
             const [tab] = await chrome.tabs.query({
                 active: true,
-                lastFocusedWindow: true,
+                currentWindow: true,
             });
             if (tab) {
                 chrome.tabs.sendMessage(tab.id, message);
@@ -45,10 +46,11 @@ export default class ProxyServer {
                 let parts = Redfish.searchParams(request.url);
                 let origin_url = parts["redirect_url"];
                 let url = that.proxy_server + "/request?method=" + request.method + "&url=" + origin_url;
-                let unique_api = method + "_" + origin_url + "_" + dragon_extra;
+                let unique_api = request.method + "_" + origin_url + "_" + dragon_extra;
                 if (!that.visited_hash.hasOwnProperty(unique_api)) {
                     that.doGet(url, request.method, origin_url, dragon_extra);
                     that.visited_hash[unique_api] = 1;
+                    that.sendMessageToContentJs({ type: "api_count", count: that.visited_apis.length + 1 });
                 }
             },
             {
@@ -63,8 +65,8 @@ export default class ProxyServer {
             if (shortcut == "reload_extension") {
                 console.log("reload extension");
                 chrome.runtime.reload();
-            } else if (shortcut == "download_redfish_pages") {
-                that.sendMessageToContentJs({ type: "pages", pages: that.visited_apis });
+            } else if (shortcut == "download_apis") {
+                that.sendMessageToContentJs({ type: "download_apis", apis: that.visited_apis });
             }
         });
     }
