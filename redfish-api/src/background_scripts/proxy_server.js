@@ -4,8 +4,8 @@ import NetRules from "./net_rule";
 export default class ProxyServer {
     constructor(proxy_server) {
         this.proxy_server = proxy_server || "https://localhost:9999";
-        this.visited_urls = {};
-        this.visited_pages = [];
+        this.visited_hash = {};
+        this.visited_apis = [];
         this.net_rules = new NetRules();
         this.net_rules.setProxyServer(this.proxy_server);
     }
@@ -29,21 +29,32 @@ export default class ProxyServer {
             }
         })();
     }
+    getResponseHeaderValue(response_headers, key) {
+        for (let i = 0; i < response_headers.length; i++) {
+            if (response_headers[i].hasOwnProperty(key)) {
+                return response_headers[i][key];
+            }
+        }
+        return "";
+    }
     listenWebRequest() {
         let that = this;
         chrome.webRequest.onCompleted.addListener(
             (request) => {
+                let dragon_extra = that.getResponseHeaderValue(request.responseHeaders, "X-Dragon-Extra");
                 let parts = Redfish.searchParams(request.url);
                 let origin_url = parts["redirect_url"];
-                if (!that.visited_urls.hasOwnProperty(origin_url)) {
-                    let url = that.proxy_server + "/request?method=" + request.method + "&url=" + origin_url;
-                    that.doGet(url, request.method, origin_url);
-                    that.visited_urls[origin_url] = 1;
+                let url = that.proxy_server + "/request?method=" + request.method + "&url=" + origin_url;
+                let unique_api = method + "_" + origin_url + "_" + dragon_extra;
+                if (!that.visited_hash.hasOwnProperty(unique_api)) {
+                    that.doGet(url, request.method, origin_url, dragon_extra);
+                    that.visited_hash[unique_api] = 1;
                 }
             },
             {
-                urls: [that.proxy_server + "/proxy*"],
-            }
+                urls: [that.proxy_server + "/proxy*"]
+            },
+            ["responseHeaders"]
         );
     }
     listenCommands() {
@@ -53,7 +64,7 @@ export default class ProxyServer {
                 console.log("reload extension");
                 chrome.runtime.reload();
             } else if (shortcut == "download_redfish_pages") {
-                that.sendMessageToContentJs({ type: "pages", pages: that.visited_pages });
+                that.sendMessageToContentJs({ type: "pages", pages: that.visited_apis });
             }
         });
     }
@@ -69,16 +80,16 @@ export default class ProxyServer {
             }
             throw new Error("Network response was not ok.");
         }).then((data) => {
-            let parameters = data["_dragon_meta_"];
-            delete data["_dragon_meta_"];
-            that.visited_pages.push({
+            let parameters = data["@dragon_extra"];
+            delete data["@dragon_extra"];
+            let api_request = {
                 url: origin_url,
                 method: method,
                 parameters: parameters,
                 response: data,
-            });
-            console.log(origin_url);
-            console.log(data);
+            };
+            that.visited_apis.push(api_request);
+            console.log(api_request);
         }).catch((error) => {
             console.info("Error:", error);
         });
