@@ -70,10 +70,4 @@ onMounted(() => {
 // );
 </script>
    
-<style lang="less" scoped>
-.popup-header {
-    width: 100px;
-    height: 100px;
-    color: red;
-}
-</style>
+<style lang="less" scoped></style>

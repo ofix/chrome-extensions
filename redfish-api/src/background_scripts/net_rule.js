@@ -62,14 +62,9 @@ export default class NetRules {
             ...this.buildProxyRule(),
             this.buildModifyHeadRule()
         ];
-        console.log(JSON.stringify(rules, '', 3));
 
         const oldRules = await chrome.declarativeNetRequest.getDynamicRules();
-        console.log("++++++ old Rules  ++++++");
-        console.log(JSON.stringify(oldRules, "", 3));
         const oldRuleIds = oldRules.map(rule => rule.id);
-        console.log(oldRuleIds);
-        console.log("+++++++++");
 
         chrome.declarativeNetRequest.updateDynamicRules({
             removeRuleIds: oldRuleIds,
