@@ -2,19 +2,24 @@
     <el-tabs type="border-card" class="popup-tabs">
         <el-tab-pane label="接口">
             <el-table :data="apis" style="width: 100%">
-                <el-table-column prop="url" label="URL" />
-                <el-table-column prop="method" label="请求方法" width="180" />
-                <el-table-column prop="parameters" label="请求参数" />
-                <el-table-column prop="duration" label="请求耗时" width="180" />
+                <el-table-column prop="@dragon.url" label="URL" />
+                <el-table-column prop="@dragon.method" label="请求方法" width="180" />
+                <el-table-column prop="@dragon.parameters" label="请求参数" />
+                <el-table-column prop="@dragon.duration" label="请求耗时" width="180" />
             </el-table>
         </el-tab-pane>
         <el-tab-pane label="配置">配置</el-tab-pane>
     </el-tabs>
 </template>
 
-<script>
-// import { ref } from 'vue';
-// let apis = ref([]);
+<script setup>
+import { ref } from 'vue';
+let apis = ref([{
+    "@dragon.url": "www.google.com",
+    "@dragon.method": "GET",
+    "@dragon.prameters": "{\"user\":1}",
+    "@dragon.duration": "4ms"
+}]);
 console.log("popup new request");
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     console.error("++++++ receive new _request ++++++++");

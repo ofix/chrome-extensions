@@ -90,7 +90,7 @@ export default class ProxyServer {
             }
             throw new Error("Network response was not ok.");
         }).then((data) => {
-            that.broadcastMessage({ type: "new_request", data: data });
+            that.sendMessageToContentJs({ type: "new_request", data: data });
             that.visited_apis.push(data);
             chrome.storage.local.set({ "visited_apis": that.visited_apis });
             chrome.storage.local.set({ "visited_hash": that.visited_hash });
