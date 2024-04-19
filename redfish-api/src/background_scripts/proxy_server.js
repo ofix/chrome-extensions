@@ -4,18 +4,25 @@ import NetRules from "./net_rule";
 export default class ProxyServer {
     constructor(proxy_server) {
         this.proxy_server = proxy_server || "https://localhost:9999";
+        this.visited_hash = {};
+        this.visited_apis = [];
         let that = this;
         chrome.storage.local.get("visited_hash", function (result) {
-            that.visited_hash = {};
+            if (typeof result.visited_hash !== 'undefined') {
+                that.visited_hash = result.visited_hash;
+            }
         });
         chrome.storage.local.get("visited_apis", function (result) {
-            that.visited_apis = [];
+            if (typeof result.visited_apis !== 'undefined') {
+                that.visited_apis = result.visited_apis;
+            }
         });
         this.net_rules = new NetRules();
         this.net_rules.setProxyServer(this.proxy_server);
     }
     async run() {
         await this.net_rules.update();
+        this.listenPopup();
         this.listenCommands();
         this.listenWebRequest();
     }
@@ -46,6 +53,13 @@ export default class ProxyServer {
         }
         return "";
     }
+    listenPopup() {
+        chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+            if (message.type == "query_recent_apis") {
+                chrome.runtime.sendMessage({ type: "recent_apis" });
+            }
+        });
+    }
     listenWebRequest() {
         let that = this;
         chrome.webRequest.onCompleted.addListener(
@@ -71,7 +85,6 @@ export default class ProxyServer {
         let that = this;
         chrome.commands.onCommand.addListener((shortcut) => {
             if (shortcut == "reload_extension") {
-                console.log("reload extension");
                 chrome.runtime.reload();
             } else if (shortcut == "download_apis") {
                 that.sendMessageToContentJs({ type: "download_apis", apis: that.visited_apis });
@@ -90,11 +103,9 @@ export default class ProxyServer {
             }
             throw new Error("Network response was not ok.");
         }).then((data) => {
-            that.sendMessageToContentJs({ type: "new_request", data: data });
             that.visited_apis.push(data);
             chrome.storage.local.set({ "visited_apis": that.visited_apis });
             chrome.storage.local.set({ "visited_hash": that.visited_hash });
-
             console.log(data);
         }).catch((error) => {
             console.info("Error:", error);
