@@ -25,6 +25,32 @@ export default class ProxyServer {
         this.listenPopup();
         this.listenCommands();
         this.listenWebRequest();
+        this.queryHistory();
+    }
+    queryHistory() {
+        let that = this;
+        fetch(this.proxy_server + "/history", {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error("Network response was not ok.");
+        }).then((data) => {
+            that.visited_apis = data;
+            chrome.storage.local.set({ "visited_apis": that.visited_apis });
+            chrome.storage.local.set({ "visited_hash": that.visited_hash });
+        }).catch((error) => {
+            console.info("Error:", error);
+        });
+    }
+    enableMock() {
+        this.net_rules.enableMock();
+    }
+    disableMock() {
+        this.net_rules.disableMock();
     }
     addProxyFilter(rule) {
         this.net_rules.addProxyFilter(rule);
