@@ -1,9 +1,3 @@
-// 修改跨域设置
-let meta = document.createElement("meta");
-meta.setAttribute("name", "referrer");
-meta.setAttribute("content", "origin");
-document.head.appendChild(meta);
-
 const init = () => {
     const injectContentPage = (id, page_url) => {
         const inject_iframe = document.createElement("iframe");

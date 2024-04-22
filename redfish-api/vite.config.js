@@ -44,6 +44,7 @@ export default defineConfig({
                 popup: path.resolve(__dirname, "src/popup/index.html"),
                 content_pages: path.resolve(__dirname, "src/content_pages/index.html"),
                 content: path.resolve(__dirname, "src/content_scripts/content.js"),
+                watcher: path.resolve(__dirname, "src/content_scripts/watcher.js"),
                 background: path.resolve(
                     __dirname,
                     "src/background_scripts/service_worker.js"
@@ -51,13 +52,18 @@ export default defineConfig({
             },
             output: {
                 entryFileNames: (chunkInfo) => {
-                    const baseName = path.basename(
+                    let baseName = path.basename(
                         chunkInfo.facadeModuleId,
                         path.extname(chunkInfo.facadeModuleId)
                     );
-                    const saveArr = ["content", "service_worker"];
-                    const entry_name = `[name]/${saveArr.includes(baseName) ? baseName : chunkInfo.name
-                        }.js`;
+                    let entry_name = "";
+                    if (baseName == "watcher") {
+                        entry_name = "content/watcher.js";
+                    } else {
+                        const saveArr = ["content", "watcher", "service_worker"];
+                        entry_name = `[name]/${saveArr.includes(baseName) ? baseName : chunkInfo.name
+                            }.js`;
+                    }
                     return entry_name;
                 },
                 assetFileNames: "[name]/[name].[ext]", // 静态资源

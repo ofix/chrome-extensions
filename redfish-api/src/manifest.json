@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Redfish",
+    "name": "Redfish-Api",
     "version": "1.0.0",
     "description": "抓取Redfish API接口返回的数据",
     "homepage_url": "https://github.com/ofix",
@@ -22,7 +22,8 @@
     "content_scripts": [
         {
             "js": [
-                "content/content.js"
+                "content/content.js",
+                "content/watcher.js"
             ],
             "matches": [
                 "https://*/*"
@@ -54,6 +55,7 @@
         {
             "resources": [
                 "content_pages/*",
+                "content/*",
                 "assets/*",
                 "_locales/*"
             ],
@@ -73,6 +75,14 @@
                 "linux": "Ctrl+Q"
             },
             "description": "保存 BMC Redfish API 接口数据抓取"
+        },
+        "form_record": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+R",
+                "windows": "Ctrl+Shift+R",
+                "mac": "Command+Shift+R"
+            },
+            "description": "form recording"
         },
         "reload_extension": {
             "suggested_key": {

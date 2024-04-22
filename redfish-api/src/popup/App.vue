@@ -20,7 +20,16 @@
                 <el-table-column prop="@dragon.request_time" label="请求时间" width="190" />
                 <el-table-column prop="@dragon.duration" label="请求耗时" />
             </el-table>
-            <el-button id="more-btn" type="primary" text bg @click="on">查看更多</el-button>
+            <el-row id="bottom-toolbar" :gutter="14">
+                <el-col :span="12">
+                    <el-button id="more-btn" type="primary" text bg @click="onMoreBtn">查看更多</el-button>
+                </el-col>
+                <el-col :span="12">
+                    <el-button id="form-record-btn" type="primary" text bg @click="onClickFormRecordBtn">表单录制</el-button>
+                </el-col>
+            </el-row>
+
+
         </el-tab-pane>
         <el-tab-pane label="配置">配置</el-tab-pane>
     </el-tabs>
@@ -50,6 +59,28 @@ setInterval(function () {
     }
 }, 500);
 
+function sendMessageToContentJs(message) {
+    (async () => {
+        const [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+        });
+        if (tab) {
+            console.log("send message to content js", message);
+            chrome.tabs.sendMessage(tab.id, message);
+        }
+    })();
+}
+
+// 发送表单录制消息给content.js
+function onClickFormRecordBtn(e) {
+    sendMessageToContentJs({ type: "form_record" });
+}
+
+function onClickMoreBtn(e) {
+
+}
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.type == "recent_apis") {
         chrome.storage.local.get("visited_apis", function (result) {
@@ -75,7 +106,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     white-space: nowrap;
 }
 
-#more-btn {
+#bottom-toolbar {
     position: fixed;
     bottom: 24px;
     left: 24px;

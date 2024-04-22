@@ -114,6 +114,8 @@ export default class ProxyServer {
                 chrome.runtime.reload();
             } else if (shortcut == "download_apis") {
                 that.sendMessageToContentJs({ type: "download_apis", apis: that.visited_apis });
+            } else if (shortcut == "form_record") {
+                that.sendMessageToContentJs({ type: "form_record" });
             }
         });
     }
