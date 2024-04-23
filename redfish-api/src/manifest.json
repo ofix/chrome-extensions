@@ -41,6 +41,7 @@
         "nativeMessaging",
         "contextMenus",
         "tabs",
+        "activeTab",
         "notifications",
         "webRequest",
         "storage",
