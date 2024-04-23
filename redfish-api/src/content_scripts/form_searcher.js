@@ -18,22 +18,32 @@ export default class FormSearcher {
             let o = this.nodeJsPath(nodes[i]);
             this.search_nodes.push(o);
         }
-        this.calcCaptureAreaSize();
+        this.calcCaptureAreaSize(); // 计算画布大小
         this.capture(); // 截屏
-
+        this.downloadCaptureImage("dragon_capture.png");
     }
     // 需要考虑页面窗口是否包含滚动条，是否有横向滚动条
     capture() {
         let chunks = this.captureChunks();
         this.mergeChunks(chunks);
     }
+    downloadCaptureImage(png_file_name) {
+        let png_base64 = this.canvas.toDataURL("image/png");
+        let a = document.createElement('a');
+        a.href = png_base64;
+        a.download = png_file_name;
+        a.click();
+    }
     captureChunks() {
+        // 发送消息给 service_worker.js, 由 service_worker 进行截屏并绘制
+        // 绘制过程中需要滚动
+        // 
         let chunks = [];
         let offsetY = this.top;
-        let visible_page_height = this.getVisibleHeight();
+        let visible_height = this.getPageVisibleHeight();
         let capture_count = 1;
         while (offsetY <= this.bottom) {
-            windows.scrollBy(0, offsetY);
+            window.scrollBy(0, offsetY);
             setInterval(() => {
                 chrome.tabs.captureVisibleTab((screenshotDataUrl) => {
                     let img = new Image();
@@ -42,7 +52,7 @@ export default class FormSearcher {
                 });
             }, 800 * capture_count);
             capture_count += 1;
-            offsetY += visible_page_height;
+            offsetY += visible_height;
         }
         return chunks;
     }
@@ -50,10 +60,10 @@ export default class FormSearcher {
         var ctx = canvas.getContext("2d");
         let width = this.right - this.left;  // 区域截图宽度
         let height = this.bottom - this.top; // 区域截图高度
-        let visible_page_height = this.getPageVisibleHeight();
+        let visible_height = this.getPageVisibleHeight();
         for (let i = 0; i < chunks.length; i++) {
             chunks[i].onload = () => {
-                ctx.drawImage(chunks[i], this.left, 0, width, visible_page_height,
+                ctx.drawImage(chunks[i], this.left, 0, width, visible_height,
                     0, visible_page_height * i, width, height);
             }
         }
