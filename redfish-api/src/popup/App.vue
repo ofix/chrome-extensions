@@ -37,6 +37,9 @@
 
 <script setup>
 import { ref } from 'vue';
+import { sendMessageToContentJs } from "../common/common.js";
+import SnapShot from "./snapshot.js";
+
 let apis = ref([]);
 
 const elementIsVisibleInViewport = (el, partiallyVisible = false) => {
@@ -54,27 +57,15 @@ let opened = false;
 setInterval(function () {
     let ele = document.getElementById("app");
     if (elementIsVisibleInViewport(ele) && !opened) {
-        chrome.runtime.sendMessage({ type: "query_recent_apis" });
+        chrome.runtime.sendMessage({ action: "query_recent_apis" });
         opened = true;
     }
 }, 500);
 
-function sendMessageToContentJs(message) {
-    (async () => {
-        const [tab] = await chrome.tabs.query({
-            active: true,
-            currentWindow: true,
-        });
-        if (tab) {
-            console.log("send message to content js", message);
-            chrome.tabs.sendMessage(tab.id, message);
-        }
-    })();
-}
 
 // 发送表单录制消息给content.js
 function onClickFormRecordBtn(e) {
-    sendMessageToContentJs({ type: "form_record" });
+    sendMessageToContentJs({ action: "form_record" });
 }
 
 function onClickMoreBtn(e) {
@@ -82,7 +73,7 @@ function onClickMoreBtn(e) {
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.type == "recent_apis") {
+    if (message.action == "recent_apis") {
         chrome.storage.local.get("visited_apis", function (result) {
             if (typeof result.visited_apis !== 'undefined') {
                 let records = result.visited_apis.slice(-10);
@@ -96,6 +87,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         });
     }
 });
+
+(new SnapShot()).listenCaptureEvent();
+
 </script>
 
 <style lang="less" scoped>

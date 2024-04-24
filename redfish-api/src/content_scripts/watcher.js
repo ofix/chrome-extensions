@@ -10,7 +10,7 @@ function downloadRedifshApis(data) {
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.type == "download_apis") {
+    if (message.action == "download_apis") {
         let data = "";
         for (let i = 0; i < message.apis.length; i++) {
             let api = message.apis[i];
@@ -24,12 +24,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             data += "```";
         }
         downloadRedifshApis(data);
-    } else if (message.type == "api_count") {
+    } else if (message.action == "api_count") {
         chrome.action.setBadgeText({ text: (message.count).toString() });
         chrome.action.setBadgeBackgroundColor({ color: "#6600cc" });
-    } else if (message.type == "form_record") {
+    } else if (message.action == "form_record") {
         let searcher = new FormSearcher(location.href);
-        searcher.execute();
+        searcher.find();
         console.log(JSON.stringify(searcher.getSearchResult(), '', 3));
     }
 });

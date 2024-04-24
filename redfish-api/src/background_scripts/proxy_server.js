@@ -1,5 +1,6 @@
-import Redfish from "./redfish";
-import NetRules from "./net_rule";
+import { sendMessageToContentJs } from "../common/common.js"
+import Redfish from "./redfish.js";
+import NetRules from "./net_rule.js";
 
 export default class ProxyServer {
     constructor(proxy_server) {
@@ -55,19 +56,6 @@ export default class ProxyServer {
     addProxyFilter(rule) {
         this.net_rules.addProxyFilter(rule);
     }
-    // 从background.js发送消息给content.js
-    sendMessageToContentJs(message) {
-        // chrome.runtime.sendMessage(message);
-        (async () => {
-            const [tab] = await chrome.tabs.query({
-                active: true,
-                currentWindow: true,
-            });
-            if (tab) {
-                chrome.tabs.sendMessage(tab.id, message);
-            }
-        })();
-    }
     broadcastMessage(message) {
         chrome.runtime.sendMessage(message);
     }
@@ -81,8 +69,8 @@ export default class ProxyServer {
     }
     listenPopup() {
         chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-            if (message.type == "query_recent_apis") {
-                chrome.runtime.sendMessage({ type: "recent_apis" });
+            if (message.action == "query_recent_apis") {
+                chrome.runtime.sendMessage({ action: "recent_apis" });
             }
         });
     }
@@ -99,7 +87,7 @@ export default class ProxyServer {
                 that.doGet(url, request.method, origin_url);
                 that.visited_hash[unique_api] = 1;
                 // }
-                that.sendMessageToContentJs({ type: "api_count", count: that.visited_apis.length + 1 });
+                sendMessageToContentJs({ action: "api_count", count: that.visited_apis.length + 1 });
             },
             {
                 urls: [that.proxy_server + "/proxy*"]
@@ -108,14 +96,13 @@ export default class ProxyServer {
         );
     }
     listenCommands() {
-        let that = this;
         chrome.commands.onCommand.addListener((shortcut) => {
             if (shortcut == "reload_extension") {
                 chrome.runtime.reload();
             } else if (shortcut == "download_apis") {
-                that.sendMessageToContentJs({ type: "download_apis", apis: that.visited_apis });
+                sendMessageToContentJs({ action: "download_apis", apis: that.visited_apis });
             } else if (shortcut == "form_record") {
-                that.sendMessageToContentJs({ type: "form_record" });
+                sendMessageToContentJs({ action: "form_record" });
             }
         });
     }
