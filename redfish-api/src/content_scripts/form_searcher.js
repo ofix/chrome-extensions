@@ -4,6 +4,7 @@ export default class FormSearcher {
         this.page_url = page_url;   // 当前页面URL
         this.selectors = selectors || "input,select"; // 表单元素选择器, 逗号分割的选择器，比如 div,.el-input,#visible-color
         this.search_nodes = [];     // 查找到的表单元素集合
+        this.node_ancestors = [];   // 所有元素的祖先路径
         this.capture_data = null;   // 当前表单对应的屏幕截图
         this.dragon_url = "";       // dragon_url保存的文件名称和路径
         this.in_capture = false;     // 是否在截屏中
@@ -43,6 +44,7 @@ export default class FormSearcher {
      */
     async find() {
         this.findFormFields();
+        this.findCommonAncestor();
         this.calcCaptureAreaSize();
         this.prepareBeforeCapture();
         await this.capture();
@@ -52,8 +54,17 @@ export default class FormSearcher {
         let nodes = window.parent.document.querySelectorAll(this.selectors)
         for (let i = 0; i < nodes.length; i++) {
             let o = this.nodeJsPath(nodes[i]);
+            let ancestor_path = this.nodeAncestorPath(nodes[i]);
             this.search_nodes.push(o);
+            this.node_ancestors.push(ancestor_path);
         }
+    }
+    findCommonAncestor() { // 寻找元素共同的祖先
+        console.log("+++++++   findCommonAncestor    ++++++++++");
+        for (let i = 0; i < this.node_ancestors.length; i++) {
+            console.log(this.node_ancestors[i]);
+        }
+        console.log("++++++++++++++++++++++++++++");
     }
     calcCaptureAreaSize() {
         let left = 100000;
@@ -170,6 +181,21 @@ export default class FormSearcher {
             }
         }
         return [childIndex + 1, childCount];
+    }
+    nodeAncestorPath(node) {
+        let stack = [];
+        while (node.parentNode != null) {
+            let [index, count] = this.getNodeIndex(node.parentNode, node);
+            if (node.hasAttribute('id') && node.id != '') {
+                stack.unshift(node.nodeName.toLowerCase() + '#' + node.id);
+            } else if (count > 1 && index > 0) {
+                stack.unshift(node.nodeName.toLowerCase() + ':nth-child(' + index + ')');
+            } else {
+                stack.unshift(node.nodeName.toLowerCase());
+            }
+            node = node.parentNode;
+        }
+        return stack.slice(1).join(">");
     }
     // 查找元素唯一路径 nodeJsPath
     nodeJsPath(node) {
