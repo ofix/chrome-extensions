@@ -18,6 +18,7 @@ export default class FormSearcher {
         this.chunks = [];               // 需要滚动的Y坐标
         this.scroll_top_gap = 20;       // 顶部距离
         this.scroll_height = 0;         // 每次滚动的高度
+        this.common_ancestor = null;    // 共同祖先
     }
     setScrollTopGap(gap) {
         this.scroll_top_gap = gap;
@@ -50,45 +51,84 @@ export default class FormSearcher {
         await this.capture();
         this.downloadSnapshot("dragon_capture.png");
     }
+    isNodeVisible(node) {
+        return node.offsetParent !== null;
+    }
     findFormFields() {
         let nodes = window.parent.document.querySelectorAll(this.selectors)
         for (let i = 0; i < nodes.length; i++) {
-            let o = this.nodeJsPath(nodes[i]);
-            let ancestor_path = this.nodeAncestorPath(nodes[i]);
-            this.search_nodes.push(o);
-            this.node_ancestors.push(ancestor_path);
+            if (this.isNodeVisible(nodes[i])) {
+                let o = this.nodeJsPath(nodes[i]);
+                let ancestor_path = this.nodeAncestorPath(nodes[i]);
+                this.search_nodes.push(o);
+                this.node_ancestors.push(ancestor_path);
+            } else {
+                console.log("node is invisible " + nodes[i]);
+            }
         }
     }
     findCommonAncestor() { // 寻找元素共同的祖先
-        console.log("+++++++   findCommonAncestor    ++++++++++");
-        for (let i = 0; i < this.node_ancestors.length; i++) {
-            console.log(this.node_ancestors[i]);
+        if (this.node_ancestors.length == 0) {
+            return "";
         }
-        console.log("++++++++++++++++++++++++++++");
+        if (this.node_ancestors.length == 1) {
+            return this.node_ancestors[0];
+        }
+        let prefix = this.node_ancestors[0];
+        let prefix_length = prefix.length;
+        for (let i = 1; i < this.node_ancestors.length; i++) {
+            for (let j = 0; j <= prefix_length; j++) {
+                if (prefix[j] != this.node_ancestors[i][j]) {
+                    prefix_length = j;
+                }
+            }
+        }
+        prefix = prefix.slice(0, prefix_length);
+        // 寻找最近的ID
+        let target_id = "";
+        for (let i = prefix.length - 1; i > 0; i--) {
+            if (prefix[i].indexOf('#') != -1) {
+                target_id = prefix[i];
+                break;
+            }
+        }
+        if (target_id == "") {
+            target_id = prefix.join(">");
+        }
+        this.common_ancestor = document.querySelector(target_id);
+        console.log(this.common_ancestor);
     }
     calcCaptureAreaSize() {
-        let left = 100000;
-        let top = 100000;
-        let right = 0;
-        let bottom = 0;
-        for (let i = 0; i < this.search_nodes.length; i++) {
-            if (left > this.search_nodes[i].left) {
-                left = this.search_nodes[i].left;
+        if (this.common_ancestor != null) {
+            let rect = this.common_ancestor.getBoundingClientRect();
+            this.capture_left = rect.left;
+            this.capture_top = rect.top;
+            this.capture_right = rect.right;
+            this.capture_bottom = rect.bottom;
+        } else {
+            let left = 100000;
+            let top = 100000;
+            let right = 0;
+            let bottom = 0;
+            for (let i = 0; i < this.search_nodes.length; i++) {
+                if (left > this.search_nodes[i].left) {
+                    left = this.search_nodes[i].left;
+                }
+                if (right < this.search_nodes[i].right) {
+                    right = this.search_nodes[i].right;
+                }
+                if (top > this.search_nodes[i].top) {
+                    top = this.search_nodes[i].top;
+                }
+                if (bottom < this.search_nodes[i].bottom) {
+                    bottom = this.search_nodes[i].bottom;
+                }
             }
-            if (right < this.search_nodes[i].right) {
-                right = this.search_nodes[i].right;
-            }
-            if (top > this.search_nodes[i].top) {
-                top = this.search_nodes[i].top;
-            }
-            if (bottom < this.search_nodes[i].bottom) {
-                bottom = this.search_nodes[i].bottom;
-            }
+            this.capture_left = left;
+            this.capture_top = top;
+            this.capture_right = right;
+            this.capture_bottom = bottom;
         }
-        this.capture_left = left;
-        this.capture_top = top;
-        this.capture_right = right;
-        this.capture_bottom = bottom;
     }
     prepareBeforeCapture() {
         this.visible_width = this.getPageVisibleWidth();
@@ -140,13 +180,13 @@ export default class FormSearcher {
         });
     }
     downloadSnapshot(png_file_name) {
-        console.log("download png");
         setTimeout(() => {
+            console.log("download png");
             chrome.runtime.sendMessage({
                 action: "download_capture",
                 file_name: png_file_name
             });
-        }, 1000);
+        }, 2000);
     }
     // 获取页面可视高度
     getPageVisibleHeight() {
@@ -164,8 +204,19 @@ export default class FormSearcher {
             document.body.clientWidth;
         return windowWidth;
     }
-    classNameToArray(className) {
-        return className.split(" ");
+    classNameToArray(classList) {
+        let classes = [];
+        classList.forEach(className => {
+            classes.push(className);
+        });
+        return classes;
+    }
+    firstClassName(classList) {
+        let classes = this.classNameToArray(classList);
+        if (classes.length > 0) {
+            return classes[0];
+        }
+        return "";
     }
     // 查找相同类型的子元素所在位置
     getNodeIndex(parentNode, currentNode) {
@@ -186,22 +237,27 @@ export default class FormSearcher {
         let stack = [];
         while (node.parentNode != null) {
             let [index, count] = this.getNodeIndex(node.parentNode, node);
+            let class_name = this.firstClassName(node.classList);
             if (node.hasAttribute('id') && node.id != '') {
                 stack.unshift(node.nodeName.toLowerCase() + '#' + node.id);
             } else if (count > 1 && index > 0) {
                 stack.unshift(node.nodeName.toLowerCase() + ':nth-child(' + index + ')');
             } else {
-                stack.unshift(node.nodeName.toLowerCase());
+                if (class_name != "") {
+                    stack.unshift(node.nodeName.toLowerCase() + "." + class_name);
+                } else {
+                    stack.unshift(node.nodeName.toLowerCase());
+                }
             }
             node = node.parentNode;
         }
-        return stack.slice(1).join(">");
+        return stack.slice(1);
     }
     // 查找元素唯一路径 nodeJsPath
     nodeJsPath(node) {
         let stack = [];
         let value = node.value;
-        var rect = node.getBoundingClientRect();
+        let rect = node.getBoundingClientRect();
         while (node.parentNode != null) {
             let [index, count] = this.getNodeIndex(node.parentNode, node);
             if (node.hasAttribute('id') && node.id != '') {

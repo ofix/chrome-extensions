@@ -45,10 +45,12 @@ export default class SnapShot {
         img.src = imageDataUrl;
     }
     downloadCapture(png_file_name) {
-        let png_base64 = this.canvas.toDataURL("image/png");
-        let a = document.createElement('a');
-        a.href = png_base64;
-        a.download = png_file_name;
-        a.click();
+        if (this.canvas != null) {
+            let png_base64 = this.canvas.toDataURL("image/png");
+            let a = document.createElement('a');
+            a.href = png_base64;
+            a.download = png_file_name;
+            a.click();
+        }
     }
 };
