@@ -42,7 +42,8 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 popup: path.resolve(__dirname, "src/popup/index.html"),
-                content_pages: path.resolve(__dirname, "src/content_pages/index.html"),
+                content_page_default: path.resolve(__dirname, "src/content_pages/default.html"),
+                content_page_api: path.resolve(__dirname, "src/content_pages/api.html"),
                 content: path.resolve(__dirname, "src/content_scripts/content.js"),
                 watcher: path.resolve(__dirname, "src/content_scripts/watcher.js"),
                 background: path.resolve(
@@ -59,6 +60,8 @@ export default defineConfig({
                     let entry_name = "";
                     if (baseName == "watcher") {
                         entry_name = "content/watcher.js";
+                    } else if (chunkInfo.facadeModuleId.indexOf("content_pages") != -1) {
+                        entry_name = "content_pages/" + baseName + ".js";
                     } else {
                         const saveArr = ["content", "watcher", "service_worker"];
                         entry_name = `[name]/${saveArr.includes(baseName) ? baseName : chunkInfo.name

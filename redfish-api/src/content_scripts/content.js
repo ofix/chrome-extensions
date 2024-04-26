@@ -9,7 +9,7 @@ const init = () => {
         document.body.appendChild(inject_iframe);
     };
     // 注入iframe页面
-    injectContentPage("content-start-iframe", "content_pages/index.html");
+    injectContentPage("content-start-iframe", "content_pages/default.html");
 };
 
 init();

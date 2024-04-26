@@ -22,7 +22,7 @@
             </el-table>
             <el-row id="bottom-toolbar" :gutter="14">
                 <el-col :span="12">
-                    <el-button id="more-btn" type="primary" text bg @click="onMoreBtn">查看更多</el-button>
+                    <el-button id="more-btn" type="primary" text bg @click="onClickMoreBtn">查看更多</el-button>
                 </el-col>
                 <el-col :span="12">
                     <el-button id="form-record-btn" type="primary" text bg @click="onClickFormRecordBtn">表单录制</el-button>
@@ -69,7 +69,9 @@ function onClickFormRecordBtn(e) {
 }
 
 function onClickMoreBtn(e) {
-
+    chrome.tabs.create({
+        url: "./content_pages/api.html"
+    });
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {

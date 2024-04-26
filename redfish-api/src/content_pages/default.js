@@ -1,9 +1,9 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import AppDefault from "./views/default.vue";
 
 import ElementPlus from "element-plus";
 import "element-plus/theme-chalk/index.css";
-const app = createApp(App);
+const app = createApp(AppDefault);
 
 app.use(ElementPlus);
-app.mount("#app");
+app.mount("#app-default");
