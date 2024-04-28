@@ -64,7 +64,10 @@
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <code style="white-space: pre-wrap">{{ current_api['@dragon.response'] }}</code>
+                    <div style="margin-top:20px; height:800px; overflow-y:scroll; line-height: 28px; padding: 5px;">
+                        <highlightjs :language="highlight_language" :autodetect="highlight_autodetect"
+                            :code="highlight_data" />
+                    </div>
                 </el-col>
             </el-row>
         </el-col>
@@ -99,11 +102,14 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown } from '@element-plus/icons-vue';
 import dragon from "../utils/dragon";
 
 let apis = ref([]);
 let current_api = ref({});
+let highlight_language = ref("json");
+let highlight_autodetect = ref(false);
+let highlight_data = ref("");
 
 const defaultProps = {
     children: 'children',
@@ -118,10 +124,8 @@ function allowDrag(draggingNode) {
 }
 
 function onSelectApi($event, node, data) {
-    let api = data.api;
-    api["@dragon.response"] = JSON.stringify(data.api["@dragon.response"], '', 4);
-    console.log(api);
-    current_api.value = api;
+    current_api.value = data.api;
+    highlight_data.value = JSON.stringify(data.api["@dragon.response"], '', 3);
 }
 
 function onClickTreeContextMenuBtn(data) {
