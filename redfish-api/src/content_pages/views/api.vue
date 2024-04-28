@@ -1,34 +1,37 @@
 <template>
     <el-row :gutter="20">
         <el-col :span="6">
-            <el-tree style="max-width: 320px" :data="apis" draggable default-expand-all :allow-drop="allowDrop"
-                :allow-drag="allowDrag" :props="defaultProps">
-                <template #default="{ node, data }">
-                    <span class="dragon-tree-node" @click="onSelectApi($event, node, data)"
-                        @dblclick="onDoubleClickApiItem($event, node, data)">
-                        <span v-if="data.type === 'api'">
-                            <span :class="data.api['@dragon.method_style']">
-                                {{ data.api["@dragon.method"] }}
+            <el-scrollbar height="100vh">
+                <el-tree style="max-width: 320px" :data="apis" draggable default-expand-all :allow-drop="allowDrop"
+                    :allow-drag="allowDrag" :props="defaultProps">
+                    <template #default="{ node, data }">
+                        <span class="dragon-tree-node" @click="onSelectApi($event, node, data)"
+                            @dblclick="onDoubleClickApiItem($event, node, data)">
+                            <span v-if="data.type === 'api'">
+                                <span :class="data.api['@dragon.method_style']">
+                                    {{ data.api["@dragon.method"] }}
+                                </span>
+                                <span style="max-width:70%; margin-left:10px;">
+                                    <span v-if="data.in_edit === false">
+                                        {{ node.label }}
+                                    </span>
+                                    <span v-else>
+                                        <input class="editable-url-alias" v-model="node.label" />
+                                    </span>
+                                </span>
+                                <a @click="onClickTreeContextMenuBtn(data)"
+                                    style="display:inline-block; margin-right:4px; float:right;">...</a>
                             </span>
-                            <span style="max-width:70%; margin-left:10px;">
-                                <span v-if="data.in_edit === false">
+                            <span v-else-if="data.type === 'dir'">
+                                <span>
                                     {{ node.label }}
                                 </span>
-                                <span v-else>
-                                    <input class="editable-url-alias" v-model="node.label" />
-                                </span>
-                            </span>
-                            <a @click="onClickTreeContextMenuBtn(data)"
-                                style="display:inline-block; margin-right:4px; float:right;">...</a>
-                        </span>
-                        <span v-else-if="data.type === 'dir'">
-                            <span>
-                                {{ node.label }}
                             </span>
                         </span>
-                    </span>
-                </template>
-            </el-tree>
+                    </template>
+                </el-tree>
+            </el-scrollbar>
+
         </el-col>
         <el-col :span="18">
             <el-row>
@@ -64,10 +67,10 @@
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    <div style="margin-top:20px; height:800px; overflow-y:scroll; line-height: 28px; padding: 5px;">
+                    <el-scrollbar height="680px">
                         <highlightjs :language="highlight_language" :autodetect="highlight_autodetect"
                             :code="highlight_data" />
-                    </div>
+                    </el-scrollbar>
                 </el-col>
             </el-row>
         </el-col>
